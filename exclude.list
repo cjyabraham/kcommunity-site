@@ -1,0 +1,13 @@
+.*
+/CLA.md
+/Gopkg.lock
+/Gopkg.toml
+/LICENSE
+/Makefile
+OWNERS
+OWNERS_ALIASES
+SECURITY_CONTACTS
+/sigs.yaml
+vendor/
+hack/
+generator/

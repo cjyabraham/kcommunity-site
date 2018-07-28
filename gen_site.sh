@@ -14,6 +14,7 @@ SRC_DIR="$DIR/build/src"
 HEADER_STRING=$(head -n 1 "$DIR/header.tmplt")
 HEADER_TMPLT=$(sed -e ':a;N;$!ba;s/\n/\\n/g' "$DIR/header.tmplt")
 EXCLUDE_LIST="$DIR/exclude.list"
+INCLUDE_LIST="$DIR/include.list"
 
 # ensures directory structure and git repo in place
 init() {
@@ -27,7 +28,14 @@ init() {
 # syncs content from community repo to content dir
 sync_content() {
   echo "Syncing k/community to content dir."
-  rsync -av --exclude-from "$EXCLUDE_LIST" "$SRC_DIR/" "$CONTENT_DIR/"
+  mkdir -p "$CONTENT_DIR/special-interest-groups"
+  mkdir -p "$CONTENT_DIR/working-groups"
+  find "$SRC_DIR" -type d -name "sig-*" -maxdepth 1 -exec rsync -av "{}" "$CONTENT_DIR/special-interest-groups/" \;
+  find "$SRC_DIR" -type d -name "wg-*" -maxdepth 1 -exec rsync -av "{}" "$CONTENT_DIR/working-groups/" \;
+  find "$SRC_DIR" ! -path "$SRC_DIR" -type d  -maxdepth 1 -exec rsync -av --exclude-from="$EXCLUDE_LIST" {} "$CONTENT_DIR" \;
+  rsync -av --include-from="$INCLUDE_LIST" --exclude="*" "$SRC_DIR/" "$CONTENT_DIR"
+  cp "$SRC_DIR/sig-list.md" "$CONTENT_DIR/special-interest-groups/README.md"
+  cp "$SRC_DIR/sig-list.md" "$CONTENT_DIR/working-groups/README.md"
 }
 
 # gets all markdown files in content directory

@@ -3,26 +3,29 @@
 set -e
 set -o pipefail
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd -P)"
 
 # short circuit if requirements cannot be met
 [[ ! -f "$DIR/header.tmplt" ]] && echo 'Header Template missing. Exiting.' && exit 1
 [[ ! -f "$DIR/exclude.list" ]] && echo 'Exclude list missing. Exiting.' && exit 1
 [[ ! -f "$DIR/include.list" ]] && echo 'Include list missing. Exiting.' && exit 1
 
+# KCOMMUNITY_ROOT is passed as src dir if executing from k/community context
+SRC_DIR="${KCOMMUNITY_ROOT:-"$DIR/build/src"}"
+KCOMMUNITY_REPO="${KCOMMUNITY_REPO:-"https://github.com/kubernetes/community.git"}"
 CONTENT_DIR="$DIR/content"
-SRC_DIR="$DIR/build/src"
 HEADER_STRING=$(head -n 1 "$DIR/header.tmplt")
 HEADER_TMPLT=$(sed -e ':a;N;$!ba;s/\n/\\n/g' "$DIR/header.tmplt")
 EXCLUDE_LIST="$DIR/exclude.list"
 INCLUDE_LIST="$DIR/include.list"
+HUGO_BUILD=${HUGO_BUILD:-false}
 
 # ensures directory structure and git repo in place
 init() {
   mkdir -p "$CONTENT_DIR"
   if [[ ! -d "$SRC_DIR" ]]; then
     echo "Cloning k/community."
-    git clone git@github.com:kubernetes/community.git "$SRC_DIR"
+    git clone "$KCOMMUNITY_REPO" "$SRC_DIR"
   fi
 }
 
@@ -80,10 +83,10 @@ sub_links() {
       -e 's|README\.md#|#|Ig' \
       -e 's|\.md)|)|Ig' \
       -e 's|\.md#|#|Ig' \
-      -e 's|\](sig-|](/special-interest-groups/sig-|g' \
-      -e 's|\](wg-|](/working-groups/wg-|g' \
-      -e 's|\](../sig-|](/special-interest-groups/sig-|g' \
-      -e 's|\](../wg-|](/working-groups/wg-|g' \
+      -e 's|\](sig-|](/special-interest-groups/sig-|Ig' \
+      -e 's|\](wg-|](/working-groups/wg-|Ig' \
+      -e 's|\](../sig-|](/special-interest-groups/sig-|Ig' \
+      -e 's|\](../wg-|](/working-groups/wg-|Ig' \
       "$1" 
   echo "Links Updated in: $1"
 }
@@ -99,7 +102,8 @@ main() {
     # if its README, we need it to be renamed index.
     [[ $(basename "$file") == 'README.md' ]] && rename_file "$file"
   done < <(find_md_files)
-  echo "Community Site Generated."
+  echo "Community Site Content Generated."
+  [[ "$HUGO_BUILD" = true ]] && echo "Building Site" && hugo --source "$DIR"
 }
 
 main "$@"

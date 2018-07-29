@@ -10,6 +10,7 @@ OWNERS
 OWNERS_ALIASES
 SECURITY_CONTACTS
 sigs.yaml
+/_tmp
 /vendor
 /hack
 /generator

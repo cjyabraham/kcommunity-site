@@ -30,9 +30,12 @@ sync_content() {
   echo "Syncing k/community to content dir."
   mkdir -p "$CONTENT_DIR/special-interest-groups"
   mkdir -p "$CONTENT_DIR/working-groups"
-  find "$SRC_DIR" -type d -name "sig-*" -maxdepth 1 -exec rsync -av "{}" "$CONTENT_DIR/special-interest-groups/" \;
-  find "$SRC_DIR" -type d -name "wg-*" -maxdepth 1 -exec rsync -av "{}" "$CONTENT_DIR/working-groups/" \;
-  find "$SRC_DIR" ! -path "$SRC_DIR" -type d  -maxdepth 1 -exec rsync -av --exclude-from="$EXCLUDE_LIST" {} "$CONTENT_DIR" \;
+  find "$SRC_DIR" -type d -name "sig-*" -maxdepth 1 \
+    -exec rsync -av --exclude-from="$EXCLUDE_LIST" "{}" "$CONTENT_DIR/special-interest-groups/" \;
+  find "$SRC_DIR" -type d -name "wg-*" -maxdepth 1 \
+    -exec rsync -av --exclude-from="$EXCLUDE_LIST" "{}" "$CONTENT_DIR/working-groups/" \;
+  find "$SRC_DIR" ! -path "$SRC_DIR" -type d  -maxdepth 1 \
+    -exec rsync -av --exclude-from="$EXCLUDE_LIST" {} "$CONTENT_DIR" \;
   rsync -av --include-from="$INCLUDE_LIST" --exclude="*" "$SRC_DIR/" "$CONTENT_DIR"
   cp "$SRC_DIR/sig-list.md" "$CONTENT_DIR/special-interest-groups/README.md"
   cp "$SRC_DIR/sig-list.md" "$CONTENT_DIR/working-groups/README.md"

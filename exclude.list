@@ -1,4 +1,5 @@
-.*
+/.git
+/.gitignore
 CLA.md
 Gopkg.lock
 Gopkg.toml
@@ -8,9 +9,9 @@ OWNERS
 OWNERS_ALIASES
 SECURITY_CONTACTS
 sigs.yaml
-vendor/
-hack/
-generator/
-icons/
-wg-*
-sig-*
+/vendor
+/hack
+/generator
+/icons
+/wg-*
+/sig-*

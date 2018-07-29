@@ -99,11 +99,11 @@ main() {
     [[ $(head -n 1 "$file") == "$HEADER_STRING" ]] && continue
     sub_links "$file"
     insert_header "$file"
-    # if its README, we need it to be renamed index.
+    # if its a README, it must be renamed to _index
     [[ $(basename "$file") == 'README.md' ]] && rename_file "$file"
   done < <(find_md_files)
   echo "Community Site Content Generated."
-  [[ "$HUGO_BUILD" = true ]] && echo "Building Site" && hugo --source "$DIR"
+  [[ "$HUGO_BUILD" = true ]] && echo "Building Site" && hugo --source "$DIR" "$@"
 }
 
 main "$@"

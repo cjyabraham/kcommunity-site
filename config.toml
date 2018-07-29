@@ -9,6 +9,7 @@ defaultContentLanguage = "en"
 defaultContentLanguageInSubdir= false
 enableMissingTranslationPlaceholders = false
 publishDir="build/public"
+ignoreFiles = [ "static/\.gitignore" ]
 
 [params]
 editURL = ""

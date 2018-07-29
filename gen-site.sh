@@ -103,12 +103,10 @@ main() {
     [[ $(basename "$file") == 'README.md' ]] && rename_file "$file"
   done < <(find_md_files)
   echo "Community Site Content Generated."
-  echo "debug: $*"
-  [[ "$HUGO_BUILD" = true ]] && echo "Building Site" && hugo --source "$DIR" "$@"
-  echo "build"
-  ls -lah "$DIR/build"
-  echo "_tmp/public"
-  ls -lah "$KCOMMUNITY_ROOT/_tmp/public"
+  if [[ "$HUGO_BUILD" = true ]]; then
+    echo "Building Site with: hugo --source \"$DIR\" $*"
+    hugo --source "$DIR" "$@"
+  fi
 }
 
 main "$@"

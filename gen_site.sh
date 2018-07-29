@@ -8,6 +8,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # short circuit if requirements cannot be met
 [[ ! -f "$DIR/header.tmplt" ]] && echo 'Header Template missing. Exiting.' && exit 1
 [[ ! -f "$DIR/exclude.list" ]] && echo 'Exclude list missing. Exiting.' && exit 1
+[[ ! -f "$DIR/include.list" ]] && echo 'Include list missing. Exiting.' && exit 1
 
 CONTENT_DIR="$DIR/content"
 SRC_DIR="$DIR/build/src"
@@ -35,14 +36,15 @@ sync_content() {
   find "$SRC_DIR" -type d -name "wg-*" -maxdepth 1 \
     -exec rsync -av --exclude-from="$EXCLUDE_LIST" "{}" "$CONTENT_DIR/working-groups/" \;
   find "$SRC_DIR" ! -path "$SRC_DIR" -type d  -maxdepth 1 \
-    -exec rsync -av --exclude-from="$EXCLUDE_LIST" {} "$CONTENT_DIR" \;
+    -exec rsync -av --exclude-from="$EXCLUDE_LIST" --exclude="/wg-*" --exclude="/sig-*" {} "$CONTENT_DIR" \;
   rsync -av --include-from="$INCLUDE_LIST" --exclude="*" "$SRC_DIR/" "$CONTENT_DIR"
   cp "$SRC_DIR/sig-list.md" "$CONTENT_DIR/special-interest-groups/README.md"
   cp "$SRC_DIR/sig-list.md" "$CONTENT_DIR/working-groups/README.md"
+  cp "$SRC_DIR/README.md" "$CONTENT_DIR/README.md"
 }
 
 # gets all markdown files in content directory
-find_files() {
+find_md_files() {
   find "$CONTENT_DIR" -type f -name '*.md' -print0
 }
 
@@ -78,6 +80,10 @@ sub_links() {
       -e 's|README\.md#|#|Ig' \
       -e 's|\.md)|)|Ig' \
       -e 's|\.md#|#|Ig' \
+      -e 's|\](sig-|](/special-interest-groups/sig-|g' \
+      -e 's|\](wg-|](/working-groups/wg-|g' \
+      -e 's|\](../sig-|](/special-interest-groups/sig-|g' \
+      -e 's|\](../wg-|](/working-groups/wg-|g' \
       "$1" 
   echo "Links Updated in: $1"
 }
@@ -85,14 +91,15 @@ sub_links() {
 main() {
   init
   sync_content
-  find_files | while IFS= read -r -d $'\0' file; do
+  while IFS= read -r -d $'\0' file; do
     # short circult early if already 
     [[ $(head -n 1 "$file") == "$HEADER_STRING" ]] && continue
     sub_links "$file"
     insert_header "$file"
     # if its README, we need it to be renamed index.
     [[ $(basename "$file") == 'README.md' ]] && rename_file "$file"
-  done
+  done < <(find_md_files)
+  echo "Community Site Generated."
 }
 
 main "$@"

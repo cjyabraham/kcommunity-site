@@ -51,6 +51,22 @@ find_md_files() {
   find "$CONTENT_DIR" -type f -name '*.md' -print0
 }
 
+# Cleans up formatting of links found in docs
+sub_links() {
+  sed -i \
+      -e 's|https://github\.com/kubernetes/community/blob/master||Ig' \
+      -e 's|README\.md)|)|Ig' \
+      -e 's|README\.md#|#|Ig' \
+      -e 's|\.md)|)|Ig' \
+      -e 's|\.md#|#|Ig' \
+      -e 's|\](sig-|](/special-interest-groups/sig-|Ig' \
+      -e 's|\](wg-|](/working-groups/wg-|Ig' \
+      -e 's|\](../sig-|](/special-interest-groups/sig-|Ig' \
+      -e 's|\](../wg-|](/working-groups/wg-|Ig' \
+      "$1"
+  echo "Links Updated in: $1"
+}
+
 # inserts header into file
 insert_header() {
   local title
@@ -75,22 +91,6 @@ rename_file() {
   echo "Renamed: $1 to $filename"
 }
 
-# Cleans up formatting of links found in docs
-sub_links() {
-  sed -i \
-      -e 's|https://github\.com/kubernetes/community/blob/master||Ig' \
-      -e 's|README\.md)|)|Ig' \
-      -e 's|README\.md#|#|Ig' \
-      -e 's|\.md)|)|Ig' \
-      -e 's|\.md#|#|Ig' \
-      -e 's|\](sig-|](/special-interest-groups/sig-|Ig' \
-      -e 's|\](wg-|](/working-groups/wg-|Ig' \
-      -e 's|\](../sig-|](/special-interest-groups/sig-|Ig' \
-      -e 's|\](../wg-|](/working-groups/wg-|Ig' \
-      "$1" 
-  echo "Links Updated in: $1"
-}
-
 main() {
   init
   sync_content
@@ -100,7 +100,7 @@ main() {
     sub_links "$file"
     insert_header "$file"
     # if its a README, it must be renamed to _index
-    [[ $(basename "$file") == 'README.md' ]] && rename_file "$file"
+    [[ $(basename "${file,,}") == 'README.md' ]] && rename_file "$file"
   done < <(find_md_files)
   echo "Community Site Content Generated."
   if [[ "$HUGO_BUILD" = true ]]; then

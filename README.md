@@ -1,7 +1,7 @@
-# Kubernetes Community Site Generator
+# Kubernetes Contributor Site Generator
 
-This repository contains the [hugo](https://gohugo.io/) site and generator scripts for the
-Kubernetes Community site.  Much of the content is generated from the [kubernetes/commmunity](https://github.com/kubernetes/community)
+This repository contains the [Hugo](https://gohugo.io/) site and generator scripts for the
+Kubernetes Contributor site.  Much of the content is generated from the [kubernetes/commmunity](https://github.com/kubernetes/community)
 directly and care should be taken when working within the [content directory](content/) directly. 
 
 The heavy lifting occurs within [gen-site.sh](gen-site.sh) script. If not being called externally,
@@ -26,7 +26,43 @@ links that may need to be corrected to function outside of github along with ins
 header (if needed).
 
 Lastly, any `README.md` files are renamed to `_index.md`. These function similarly to `README.md`
-files within a github repository, but are what hugo is expecting.
+files within a github repository, but are what Hugo is expecting.
 
 At that point the site can be previewed locally with `hugo serve`, or the site built with `hugo`.
 If it is built, the default location is `build/public`. 
+
+
+# Building the Site
+
+The Kubernetes Contributor Site is built with [Hugo](https://gohugo.io/).  For instructions on
+installing and the general usage, see the [Hugo Documentation](https://gohugo.io/documentation/).
+
+Once Hugo is installed, clone the repository locally and update the submodule to fetch the theme.
+
+```
+$ git clone https://github.com/mrbobbytables/kcommunity-site.git
+$ cd kcommunity-site
+$ git submodule init
+$ git submodule update
+```
+
+Once complete, simply run the [`gen-site.sh`](gen-site.sh), script to pull down the [kubernetes/commmunity](https://github.com/kubernetes/community)
+repository and generate the site content. 
+
+After the script completes, the site can be previewed by executing `hugo serve` from the project
+directory. If satisfied with your changes, the site can be fully rendered with the `hugo` command
+to the `build/public` directory.
+
+### Note to MAC Users
+OSX by default ships with an outdated version of bash that does not support all the functionality
+used by the site generator script. Bash can be safely updated via [homebrew](https://brew.sh/).
+Once installed, execute the below commands to install a newer version of bash.
+```
+$ brew install bash
+$ sudo bash -c 'echo /usr/local/bin/bash >> /etc/shells'
+$ chsh -s /usr/local/bin/bash
+```
+You may need to restart or log out and log back in again to have it fully apply.
+
+
+

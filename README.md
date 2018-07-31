@@ -4,14 +4,14 @@ This repository contains the [Hugo](https://gohugo.io/) site and generator scrip
 Kubernetes Contributor site.  Much of the content is generated from the [kubernetes/commmunity](https://github.com/kubernetes/community)
 directly and care should be taken when working within the [content directory](content/) directly. 
 
-The heavy lifting occurs within [gen-site.sh](gen-site.sh) script. If not being called externally,
+The heavy lifting occurs within the [gen-site.sh](gen-site.sh) script. If not being called externally,
 it will clone the [kubernetes/commmunity](https://github.com/kubernetes/community) within the
 [build](build/) directory then sync specific directories and files to the [content directory](content/). 
 
 Content is synced following the below rules:
 * Directories prefixed with `sig-` will be synced to the `special-interest-groups` directory.
 * Directories prefixed with `wg-` will be synced to the `working-groups` directory.
-* Other directories that are not included in the [exclude.list](exclude.list) are copied to the 
+* Other directories not included in the [exclude.list](exclude.list) are copied to the 
   root of the [content directory](content/).
 * Files at the root of the directory will **only** be copied over if they are listed in the
   [include.list](include.list) with the exclusion of `sig-list.md` and `README.md`.
@@ -26,7 +26,7 @@ links that may need to be corrected to function outside of github along with ins
 header (if needed).
 
 Lastly, any `README.md` files are renamed to `_index.md`. These function similarly to `README.md`
-files within a github repository, but are what Hugo is expecting.
+files within a GitHub repository, but are what Hugo is expecting.
 
 At that point the site can be previewed locally with `hugo serve`, or the site built with `hugo`.
 If it is built, the default location is `build/public`. 
@@ -35,7 +35,7 @@ If it is built, the default location is `build/public`.
 # Building the Site
 
 The Kubernetes Contributor Site is built with [Hugo](https://gohugo.io/).  For instructions on
-installing and the general usage, see the [Hugo Documentation](https://gohugo.io/documentation/).
+installing and general usage, see the [Hugo Documentation](https://gohugo.io/documentation/).
 
 Once Hugo is installed, clone the repository locally and update the submodule to fetch the theme.
 

@@ -100,7 +100,7 @@ main() {
     sub_links "$file"
     insert_header "$file"
     # if its a README, it must be renamed to _index
-    [[ $(basename "${file,,}") == 'README.md' ]] && rename_file "$file"
+    [[ $(basename "${file,,}") == 'readme.md' ]] && rename_file "$file"
   done < <(find_md_files)
   echo "Community Site Content Generated."
   if [[ "$HUGO_BUILD" = true ]]; then
